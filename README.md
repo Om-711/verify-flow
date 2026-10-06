@@ -1,6 +1,6 @@
-# MPloyChek verification workspace
+# Verify Flow
 
-An Angular 20 single-page application with a small TypeScript/Node API for the NSQTech Software Intern challenge. The interface includes sign-in, user details, a check-record table, an admin member directory, and a visible async loading demo.
+An Angular 20 single-page application with a TypeScript/Node API for managing verification records. The interface includes sign-in, user details, a check-record table, an admin member directory, and a visible async loading demo.
 
 ## Run locally
 
@@ -66,8 +66,8 @@ npm test
 
 The UI deliberately keeps the workflow small: a focused sign-in screen, a dashboard with independent loading states, and a separate admin directory. The API owns authorization and record filtering so the client never decides which checks a user may read. The local JSON store keeps the demo easy to run without cloud credentials; the storage boundary is isolated in `server/src/store.ts` so it can be replaced with MongoDB or DynamoDB later.
 
-I kept the design intentionally restrained rather than using a component library: a compact green-and-ink palette, generous spacing, keyboard-visible focus, and a responsive table region. The test suite was added alongside the feature work so the same commands a reviewer uses locally exercise the important flows.
+The design uses a compact green-and-ink palette, generous spacing, keyboard-visible focus, and a responsive table region. The test commands exercise the main workflows and common failure cases.
 
-## Submission
+## Scope
 
-The assignment email requests the completed code by **10 October 2026** and explicitly accepts a **GitHub link**. Publish this folder to a repository you control and send the link in a reply to Melody Fernandez's email. Include the demo credentials and local run steps above. No separate submission portal or email address was provided in the message.
+This is a local demonstration with seeded fictional accounts. Before using it in production, replace the JSON store with a database, add session expiry and rate limits, and deploy behind HTTPS. It does not connect to a real background-verification service.

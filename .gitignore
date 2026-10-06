@@ -6,3 +6,5 @@ codegraph-cache/
 server/data/db.json
 *.log
 client/artifacts/
+client/.vscode/
+client/README.md
