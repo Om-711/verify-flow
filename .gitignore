@@ -1,0 +1,8 @@
+node_modules/
+.angular/
+dist/
+.npm-cache/
+codegraph-cache/
+server/data/db.json
+*.log
+client/artifacts/

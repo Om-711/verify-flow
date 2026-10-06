@@ -1,0 +1,57 @@
+import { chromium } from 'playwright-core';
+import assert from 'node:assert/strict';
+import { mkdirSync } from 'node:fs';
+
+const executablePath = process.env.CHROME_BIN || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+const browser = await chromium.launch({ executablePath, headless: true, args: ['--disable-gpu', '--disable-software-rasterizer', '--no-sandbox', '--disable-dev-shm-usage'] });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+mkdirSync('artifacts', { recursive: true });
+try {
+  await page.goto('http://127.0.0.1:4200/login');
+  await page.getByRole('heading', { name: /Your workspace is ready/ }).waitFor();
+  await page.screenshot({ path: 'artifacts/login-desktop.png', fullPage: true });
+  await page.getByLabel('User ID').fill('USR-001');
+  await page.getByLabel('Password').fill('wrong');
+  await page.getByRole('button', { name: /Enter workspace/ }).click();
+  await page.getByRole('alert').getByText(/incorrect/).waitFor();
+  await page.getByLabel('Password').fill('User@123');
+  await page.getByRole('button', { name: /Enter workspace/ }).click();
+  await page.getByText('Avery Morgan').waitFor();
+  await page.getByText('Employment history').waitFor();
+  await page.screenshot({ path: 'artifacts/dashboard-desktop.png', fullPage: true });
+  await page.getByRole('button', { name: /My checks/ }).click();
+  await page.waitForFunction(() => document.querySelectorAll('tbody tr').length === 3);
+  assert.equal(await page.locator('#delay').inputValue(), '1500');
+  assert.equal(await page.locator('.delay-control label b').textContent(), '1500 ms');
+  assert.equal(await page.locator('tbody tr').count(), 3);
+  assert.equal(await page.getByRole('button', { name: /People/ }).count(), 0);
+  await page.getByLabel('API delay').fill('500');
+  await page.getByRole('button', { name: /Refresh data/ }).click();
+  await page.getByText('Fetching verification records…').waitFor();
+  await page.waitForFunction(() => document.querySelectorAll('tbody tr').length === 3);
+  await page.getByRole('button', { name: /Sign out/ }).click();
+  await page.getByRole('heading', { name: /Your workspace is ready/ }).waitFor();
+  await page.getByRole('button', { name: /Admin ADM-001/ }).click();
+  await page.getByRole('button', { name: /Enter workspace/ }).click();
+  await page.getByRole('button', { name: /People/ }).click();
+  await page.getByText('People in your workspace').waitFor();
+  await page.waitForFunction(() => document.querySelectorAll('.member-row').length >= 3);
+  assert.ok(await page.locator('.member-row').count() >= 3);
+  await page.getByRole('button', { name: /My checks/ }).click();
+  await page.waitForFunction(() => document.querySelectorAll('tbody tr').length === 6);
+  assert.equal(await page.locator('tbody tr').count(), 6);
+  const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  await mobile.goto('http://127.0.0.1:4200/login');
+  await mobile.getByRole('heading', { name: /Your workspace is ready/ }).waitFor();
+  assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
+  await mobile.screenshot({ path: 'artifacts/login-mobile.png', fullPage: true });
+  await mobile.getByRole('button', { name: /General User USR-001/ }).click();
+  await mobile.getByRole('button', { name: /Enter workspace/ }).click();
+  await mobile.getByText('Avery Morgan').waitFor();
+  assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
+  await mobile.screenshot({ path: 'artifacts/dashboard-mobile.png', fullPage: true });
+  await mobile.close();
+  console.log('Browser flow passed: rejected login, user isolation, delayed loading, sign-out, admin directory and all records.');
+} finally {
+  await browser.close();
+}

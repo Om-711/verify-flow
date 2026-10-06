@@ -1,0 +1,14 @@
+{
+  "name": "mploychek-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --experimental-strip-types src/server.ts",
+    "start": "node --experimental-strip-types src/server.ts",
+    "test": "node --experimental-strip-types --test src/server.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": { "node": ">=22" },
+  "devDependencies": { "typescript": "~5.9.2", "@types/node": "^24.0.0" }
+}
